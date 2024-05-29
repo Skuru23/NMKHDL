@@ -10,16 +10,16 @@ districtFilePath = "../Data/district.csv"
 townFilePath = "../Data/town.csv"
 
 def crawl_data():
-    # cityLink = get_city_link(webLink)
-    # city = pd.DataFrame(cityLink)
-    # city.to_csv(cityFilePath,index=False)
+    cityLink = get_city_link(webLink)
+    city = pd.DataFrame(cityLink)
+    city.to_csv(cityFilePath,index=False)
     
-    # districtLink = get_district_link(cityFilePath)
-    # district = pd.DataFrame(districtLink)
-    # district.to_csv(districtFilePath, index=False)
+    districtLink = get_district_link(cityFilePath)
+    district = pd.DataFrame(districtLink)
+    district.to_csv(districtFilePath, index=False)
     
     townLink = get_town_link(districtFilePath)
     town = pd.DataFrame(townLink)
-    town.to_csv(townFilePath, index=False)
+    town.to_csv(townFilePath, index=False, encoding="utf-8")
     
 crawl_data()

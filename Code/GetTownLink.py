@@ -7,8 +7,8 @@ from helium import *
 
 driver = webdriver.Chrome()
 
-def strs(x):
-    return str(x)
+baseUrl = "https://www.agoda.com"
+searchKey = "/vi-vn/search?"
 
 def get_town_link(districtLinkFile: str):
     districtFile = open(districtLinkFile, mode="r", encoding="utf-8")
@@ -23,14 +23,15 @@ def get_town_link(districtLinkFile: str):
         htmltext = driver.page_source
         soup = BeautifulSoup(htmltext, "html.parser")
         linkList = soup.findAll("script")
-        url1 = "https://www.agoda.com/vi-vn/search?"
-        index = linkList.find(url1)
+        linkList = str(linkList)
+        index = linkList.find(searchKey)
         link = ""
-        for j in range(index, index + 100):
+        for j in range(index, index + 200):
             if linkList[j] == '"':
                 break
             link = link + linkList[j]
+        link = (baseUrl + link).replace('\\u0026', '&')
         towns.append(link)
-        print("Done " + i[0] + ": " + strs(link))
+        print("Done " + i[0] + ": " + str(link))
         sleep(3)
     return towns

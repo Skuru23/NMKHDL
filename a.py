@@ -28,10 +28,10 @@ def getPagelist():
         text_file = open("Output.txt", "w", encoding="utf-8")
         text_file.write(list)
         text_file.close()
-        url1 = "https://www.agoda.com/vi-vn/search?"
+        url1 = "/vi-vn/search?"
         index = list.find(url1)
         link = ""
-        for j in range(index, index + 100):
+        for j in range(index, index + 200):
             if list[j] == '"':
                 break
             else:
