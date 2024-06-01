@@ -12,11 +12,11 @@ driver = webdriver.Chrome()
 def get_hotel_links(districtLinkFile: str):
     districtFile = open(districtLinkFile, mode="r", encoding="utf-8")
     districtReader = csv.reader(districtFile)
-    districtLinkLink = list(districtReader)[1:2]
+    districtLink = list(districtReader)[1:]
     districtFile.close()
     
     hotels = []
-    for i in districtLinkLink:
+    for i in districtLink:
         print("Current district: " + i[0])
         a = 0
         page = 1

@@ -1,32 +1,22 @@
-import cv2
-import numpy as np
-import sys, os
-import matplotlib.pyplot as plt
 import pandas as pd
 from time import sleep
-import json
 import csv
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from helium import *
+from selenium.webdriver.support.ui import WebDriverWait
+from lxml import etree
 
 driver = webdriver.Chrome()
 
 # Link khách sạn,Độ sạch sẽ,Sự thoải mái và chất lượng phòng,Dịch vụ,Vị trí,Tiện nghi,Số lượng phòng,Số lượng nhà hàng,Số quán bar,Thang máy,Tiêu chuẩn về an toàn,Bể bơi, Bồn tắm, Ghế Sofa,Phòng xông hơi, Spa, Mát-xa,Phòng tập,Sân golf, Sân quần vợt, Rate Star
 
-
-# Hàm này thêm thông tin từng khách sạn sau khi lấy được vào từng dòng của file csv
 def append_list_as_row(file_name, list_of_elem):
-    # Open file in append mode
     with open(file_name, "a+", newline="") as write_obj:
-        # Create a writer object from csv module
         csv_writer = csv.writer(write_obj)
-        # Add contents of list as last row in the csv file
         csv_writer.writerow(list_of_elem)
 
 
-# Ham nay lay thong tin cua tung khach san
 def getInfor(link):
     dict = {
         "Link khách sạn": "nan",
@@ -53,65 +43,79 @@ def getInfor(link):
     }
     driver.get(link)
     sleep(5)
-    last_height = driver.execute_script("return document.body.scrollHeight")
+    lastHeight = driver.execute_script("return document.body.scrollHeight")
     while True:
-        # Scroll down to the bottom.
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        # Wait to load the page
-        sleep(3)
-        # Calculate new scroll height and compare with last height.
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
-        sleep(3)
-    sleep(10)
+        jumpToThisHeight = lastHeight / 2 # Tùy chỉnh theo màn hình
+        driver.execute_script(f"window.scrollTo(0, {jumpToThisHeight});")
+        sleep(5) 
+        newHeight = driver.execute_script("return document.body.scrollHeight")
+        if newHeight == lastHeight:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            sleep(5)
+            finalHeight = driver.execute_script("return document.body.scrollHeight")
+            if finalHeight == newHeight:
+                break 
+
+        lastHeight = newHeight
+    WebDriverWait(driver, 5)
     htmltext = driver.page_source
     soup = BeautifulSoup(htmltext, "html.parser")
 
-    # Lấy phòng
-    room = soup.findAll("div", class_="sub-section no-margin padding-top")
-    room1 = 0
-    if len(room) > 0:
-        x = 0
-        for i in range(len(room)):
-            mm = room[i].text
-            if str(mm).find("Về khách sạn") != -1:
-                x = i
-                break
-        room1 = room[x]
+    dom = etree.HTML(str(soup))
+    
+    room1 = NULL
+    room = dom.xpath("//span[text()='Số lượng phòng']")
+    if room:
+        room1 = room[0].xpath("following-sibling::span[1]")
+        if room1:
+            room1 = room1[0].text
+            print("Room:", room1)
+    
+    restaurant = dom.xpath("//span[text()='Số lượng nhà hàng']")
+    
+    restaurant1 = NULL
+    if restaurant:
+        restaurant1 = restaurant[0].xpath("following-sibling::span[1]")
+        if restaurant1:
+            restaurant1 = restaurant1[0].text
+            print("Restaurant:", restaurant1)
+     
+    bar1 = NULL       
+    bar = dom.xpath("//span[text()='Số lượng nhà hàng']")
+    if bar:
+        bar1 = bar[0].xpath("following-sibling::span[1]")
+        if bar1:
+            bar1 = bar1[0].text
+            print("Bar:", bar1)
+
+    # # Lấy phòng
 
     # Lấy tất cả phần đánh giá
     point = soup.find("div", class_="Review-travelerGrade-Cell")
 
     # Lấy thang máy
-    thangMay = soup.findAll("span", class_="feature-with-tooltip")
+    thangMay = dom.xpath("//span[contains(text(), 'Thang máy')]")
 
     # Tiêu chuẩn về an toàn
-    anToan = soup.findAll(
-        "i", class_="ficon ficon-32 ficon-cleaning-products feature-group-icon"
-    )
+    anToan = dom.xpath("//span[contains(text(), 'an toàn')]")
 
     # Thư giãn và vui chơi giải trí
-    beBoiNgoaiTroi = soup.findAll("i", class_="ficon ficon-18 ficon-outdoor-pool")
-    beBoiTrongNha = soup.findAll("i", class_="ficon ficon-18 ficon-indoor-poor")
-    xongKho = soup.findAll("i", class_="ficon ficon-18 ficon-sauna")
-    xongUot = soup.findAll("i", class_="ficon ficon-18 ficon-steamroom")
-    matXa = soup.findAll("i", class_="ficon ficon-18 ficon-massage")
-    sanGolf = soup.findAll("i", class_="ficon ficon-18 ficon-golf-course-on-site")
-    sanQuanVot = soup.findAll("i", class_="ficon ficon-18 ficon-tennis-courts")
-    sPa = soup.findAll("i", class_="ficon ficon-18 ficon-spa-sauna")
-    phongTap = soup.findAll("i", class_="ficon ficon-18 ficon-fitness-center")
+    beBoi  = dom.xpath("//span[contains(text(), 'Bể bơi')]")
+    xong = dom.xpath("//span[contains(text(), 'Xông')]")
+    
+    matXa = dom.xpath("//span[contains(text(), 'Mát-xa')]")
+    sanGolf = dom.xpath("//span[contains(text(), 'Sân gôn')]")
+    sanQuanVot = dom.xpath("//p[contains(text(), 'Tennis')]")
+    sPa = dom.xpath("//span[contains(text(), 'Spa')]")
+    phongTap = dom.xpath("//span[contains(text(), 'Phòng tập')]")
 
     # Trang bị trong phòng
-    bonTam = soup.findAll("i", class_="ficon ficon-18 ficon-bathtub")
-    gheSofa = soup.findAll("i", class_="ficon ficon-18 ficon-sofa")
+    bonTam = dom.xpath("//span[contains(text(), 'Bồn tắm')]") 
+    gheSofa = dom.xpath("//span[contains(text(), 'Ghế sofa')]") 
 
     # Số sao
-    star = soup.findAll("span", class_="HeaderCerebrum__Rating")
-
-    # Điền vào đánh giá
-
+    star = soup.findAll("svg", class_="bHHfTR")
+    
     dict["Link khách sạn"] = link
     try:
         point1 = point.findAll("span")
@@ -125,31 +129,23 @@ def getInfor(link):
                     i = i + 2
     except:
         print("Không có phần đánh giá")
+    if room1:
+        try:
+            dict["Số lượng phòng"] = (int)(room1)
+        except:
+            pass
+        
+    if restaurant1:
+        try:
+            dict["Số lượng nhà hàng"] = (int)(restaurant1)
+        except:
+            pass
 
-    # Điền vào số lượng khách sạn và số nhà hàng, quán bar
-    room1 = str(room1)
-    print(room1)
-    index = room1.find("Số lượng nhà hàng")
-    if index != -1:
-        sonhahang = ""
-        for i in range(index, index + 40):
-            if room1[i].isdigit() == True:
-                sonhahang = sonhahang + room1[i]
-        dict["Số lượng nhà hàng"] = (int)(sonhahang)
-    index1 = room1.find("Số lượng phòng")
-    if index1 != -1:
-        soluongphong = ""
-        for j in range(index1, index1 + 40):
-            if room1[j].isdigit() == True:
-                soluongphong = soluongphong + room1[j]
-        dict["Số lượng phòng"] = (int)(soluongphong)
-    index2 = room1.find("Số lượng quán bar")
-    if index2 != -1:
-        soquanbar = ""
-        for k in range(index2, index2 + 40):
-            if room1[k].isdigit() == True:
-                soquanbar = soquanbar + room1[k]
-        dict["Số quán bar"] = (int)(soquanbar)
+    if bar1:
+        try:
+            dict["Số quán bar"] = (int)(bar1)
+        except:
+            pass
 
     # Điền vào thang máy
     if len(thangMay) > 0:
@@ -162,18 +158,15 @@ def getInfor(link):
         dict["Tiêu chuẩn về an toàn"] = 1
 
     # Điền vào thư giãn vui chơi giải trí
-    if len(beBoiNgoaiTroi) > 0 and len(beBoiTrongNha) > 0:
-        dict["Bể bơi"] = 2
-    if len(beBoiNgoaiTroi) > 0 or len(beBoiTrongNha) > 0:
+
+    if len(beBoi) > 0:
         dict["Bể bơi"] = 1
-    if len(beBoiNgoaiTroi) == 0 and len(beBoiTrongNha) == 0:
+    if len(beBoi) == 0 :
         dict["Bể bơi"] = 0
 
-    if len(xongKho) > 0 and len(xongUot) > 0:
-        dict["Phòng xông hơi"] = 2
-    if len(xongKho) > 0 or len(xongUot) > 0:
+    if len(xong) > 0:
         dict["Phòng xông hơi"] = 1
-    if len(xongKho) == 0 and len(xongUot) == 0:
+    if len(xong) == 0:
         dict["Phòng xông hơi"] = 0
 
     if len(matXa) > 0:
@@ -212,22 +205,16 @@ def getInfor(link):
         dict["Ghế Sofa"] = 0
 
     # Điền vào số sao
-    if len(star) == 1:
-        soSao = ""
-        star = (str)(star[0])
-        x = star.find("ficon-star-")
-        for i in range(x, x + 50):
-            if star[i].isdigit() == True:
-                soSao = soSao + star[i]
-        if len(soSao) == 1:
-            dict["Rate Star"] = (float)(soSao)
-        if len(soSao) == 2:
-            dict["Rate Star"] = (float)(soSao) / 10
+    if star:
+        dict["Rate Star"] = len(star)
     return dict.values()
 
-
-links = pd.read_csv("../Data/hotelNew.csv")
-links = links["link"]
-for link in links:
-    arr = getInfor(link)
-    append_list_as_row("../Data/hotelFinish.csv", arr)
+def extract_hotel_data(hotelLinkFile: str, DataFile: str): 
+    hotelFile = open(hotelLinkFile, mode="r", encoding="utf-8")
+    hotelReader = csv.reader(hotelFile)
+    hotelLink = list(hotelReader)[1:10]
+    hotelFile.close()
+    for i in hotelLink:
+        print(i)
+        arr = getInfor(i[0])
+        append_list_as_row(DataFile, arr)
