@@ -1,9 +1,0 @@
-- File getlinkcity.py lấy các link của cáC thành phố
-- File getlinkincity.py lấy các link khu vực trong thành phố
-- File getlinktown.py lấy các link khu vực chứa tất cả khách sạn
-- File getlinkHotel.py lấy link các khách sạn từng khu vực
-- File HotelExtractor.py trích xuất thông tin từng khách sạn.
-- File RemoveHotel.py loại bỏ nhà nghỉ, villa, ... trong những link thu được.
-- File RemoveData.py loại bỏ dữ liệu nhiễu trong những link khách sạn thu được
-- File vizualization.py để trực quan hóa
-- File ClassificationRateHotel.py để xây dựng mô hình phân loại
