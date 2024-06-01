@@ -1,47 +1,58 @@
 from time import sleep
-import json
+import csv
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from helium import *
-import pandas as pd
 
 driver = webdriver.Chrome()
-linkTown = [
-    "https://www.agoda.com/vi-vn/city/ho-chi-minh-city-vn.html?cid=1844104",
-]
 
+baseUrl = "https://www.agoda.com"
+searchKey = "/vi-vn/search?"
 
-def strs(x):
-    return str(x)
+def get_district_link(cityLinkFile: str):
+    cityFile = open(cityLinkFile, mode="r", encoding="utf-8")
+    cityReader = csv.reader(cityFile)
+    cityLink = list(cityReader)[2:3]
+    cityFile.close()
 
-
-def getPagelist():
-    authors = []
-    for i in linkTown:
-        driver.get(i)
-        sleep(3)
+    districts = []
+    for i in cityLink:
+        print(i[0])
+        driver.get(i[0])
         htmltext = driver.page_source
         soup = BeautifulSoup(htmltext, "html.parser")
-        list = soup.findAll("script")
-        list = strs(list)
-        text_file = open("Output.txt", "w", encoding="utf-8")
-        text_file.write(list)
-        text_file.close()
-        url1 = "/vi-vn/search?"
-        index = list.find(url1)
-        link = ""
-        for j in range(index, index + 200):
-            if list[j] == '"':
-                break
-            else:
-                print(link)
-                link = link + list[j]
-        authors.append(link)
-        print("xong cua " + i + " la: " + strs(link))
-        sleep(3)
-    return authors
-
-
-link = getPagelist()
-print(link)
+        links = soup.find("section", class_="neighbor-class")
+        try:
+            link1 = links.findAll("a", href=True)
+            for x in link1:
+                if x.text:
+                    link = "https://www.agoda.com" + x["href"]
+                    
+                    driver.get(link)
+                    sleep(3)
+                    htmltext = driver.page_source
+                    soup = BeautifulSoup(htmltext, "html.parser")
+                    linkList = soup.findAll("script")
+                    linkList = str(linkList)
+                    text_file = open("Output.txt", "w", encoding="utf-8")
+                    text_file.write(linkList)
+                    text_file.close()
+                    index = linkList.find(searchKey)
+                    link = ""
+                    for j in range(index, index + 150):
+                        if linkList[j] == '"':
+                            break
+                        link = link + linkList[j]
+                    link = (baseUrl + link).replace('\\u0026', '&')
+                    districts.append(link)
+                    print("Done:  " + link)
+        except:
+            print("No thing: " + i[0])
+            continue
+        print(link) 
+        
+       
+        
+    return districts
+get_district_link("./Data/city.csv")

@@ -2,12 +2,13 @@ import pandas as pd
 
 from GetCityLink import get_city_link
 from GetDistrictLink import get_district_link
-from GetTownLink import get_town_link
+from GetHotelLink import get_hotel_links
 
 webLink = "https://www.agoda.com/vi-vn/country/vietnam.html?cid=1844104"
-cityFilePath = "./Data/city.csv"
+cityFilePath = "../Data/city.csv"
 districtFilePath = "../Data/district.csv"
 townFilePath = "../Data/town.csv"
+hotelFilePath = "../Data/hotel.csv"
 
 def crawl_data():
     cityLink = get_city_link(webLink)
@@ -17,9 +18,9 @@ def crawl_data():
     districtLink = get_district_link(cityFilePath)
     district = pd.DataFrame(districtLink)
     district.to_csv(districtFilePath, index=False)
-    
-    townLink = get_town_link(districtFilePath)
-    town = pd.DataFrame(townLink)
-    town.to_csv(townFilePath, index=False, encoding="utf-8")
+
+    hotelLink = get_hotel_links(districtFilePath)
+    hotel = pd.DataFrame(hotelLink)
+    hotel.to_csv(hotelFilePath, index= False)
     
 crawl_data()
