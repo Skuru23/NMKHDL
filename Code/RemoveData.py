@@ -1,55 +1,20 @@
-import cv2
-import numpy as np
-import sys,os
-import matplotlib.pyplot as plt
 import pandas as pd
-from time import sleep
-import json
-import csv
 
-#Đọc file hotelFinish.csv rồi lọc nhưng thứ nhiễu rồi lưu vào file hotelFinish1.csv
-
+# Đọc dữ liệu từ tệp hotelFinish.csv
 hotel = pd.read_csv("../Data/hotelFinish.csv")
-link = hotel['Link khách sạn']
-soPhong = hotel['Số lượng phòng']
-star = hotel['Rate Star']
-doSachSe = hotel["Độ sạch sẽ"]
-dichVu = hotel["Dịch vụ"]
-tienNghi = hotel["Tiện nghi"]
-viTri = hotel['Vị trí']
-suThoaiMai = hotel['Sự thoải mái và chất lượng phòng']
 
-#Nếu không có thông tin số phòng hoặc số sao thì loại bỏ
-arrDrop=[]
-for i in range(len(link)):
-    if str(soPhong[i])=="nan" or str(star[i])=="nan":
-        print(link[i])
-        arrDrop.append(i)
-for i in arrDrop:
-    hotel=hotel.drop(index=i)
+# Lọc bỏ các hàng không có thông tin số phòng hoặc số sao
+hotel = hotel.dropna(subset=['Số lượng phòng', 'Rate Star'])
 
-#Chuan hoa Star
-for i in range(len(link)):
-    if star[i]==1.5:
-        star[i]=1
-    if star[i]==2.5:
-        star[i]=2
-    if star[i]==3.5:
-        star[i]=3
-    if star[i]==4.5:
-        star[i]=4
+# Chuẩn hóa cột 'Rate Star'
+hotel['Rate Star'] = hotel['Rate Star'].apply(lambda x: int(x) if x % 1 == 0.5 else x)
 
-#Sủa dấu phảy trong phần chấm điểm thành dấu chấm, phục vụ cho việc chuẩn hóa Float
-for i in range(len(suThoaiMai)):
-    if str(suThoaiMai[i]).find(",")!=-1:
-        suThoaiMai[i]=str(suThoaiMai[i]).replace(",",".")
-    if str(doSachSe[i]).find(",")!=-1:
-        doSachSe[i]=str(doSachSe[i]).replace(",",".")
-    if str(dichVu[i]).find(",")!=-1:
-        dichVu[i]=str(dichVu[i]).replace(",",".")
-    if str(tienNghi[i]).find(",")!=-1:
-        tienNghi[i]=str(tienNghi[i]).replace(",",".")
-    if str(viTri[i]).find(",")!=-1:
-        viTri[i]=str(viTri[i]).replace(",",".")
+# Thay dấu phẩy bằng dấu chấm trong các cột điểm số
+columns_to_clean = ["Độ sạch sẽ", "Dịch vụ", "Tiện nghi", "Vị trí", "Sự thoải mái và chất lượng phòng"]
+for col in columns_to_clean:
+    hotel[col] = hotel[col].astype(str).str.replace(",", ".").astype(float)
 
-hotel.to_csv("../Data/hotelFinish1.csv",index=None)
+# Lưu dữ liệu đã xử lý vào tệp hotelFinish1.csv
+hotel.to_csv("../Data/hotelFinish1.csv", index=False)
+
+print(f"Lưu dữ liệu đã xử lý vào tệp hotelFinish1.csv")

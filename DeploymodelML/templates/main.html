@@ -17,22 +17,11 @@
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="static/style.css" />
-
 </head>
-
-<style>
-    label {
-        color: red;
-    }
-    
-    .clear {
-        clear: both
-    }
-</style>
 
 <body>
     <div class="container mt-3">
-        <h3 style="align-items: center;">Nhập thông tin khách sạn </h3>
+        <h3>Nhập thông tin khách sạn</h3>
         <form action="{{ url_for('main') }}" method="POST">
             <div id="c1">
                 <div class="form-group">
@@ -41,100 +30,126 @@
                 </div>
                 <div class="form-group">
                     <label>Độ sạch sẽ (Nhập thang từ 0-10):</label>
-                    <input type="number" class="form-control" name="do_sach_se" required>
+                    <input type="range" class="form-control-range" name="do_sach_se" min="0" max="10" value="5" oninput="updateValue(this)">
+                    <span class="slider-value">5</span>
                 </div>
                 <div class="form-group">
                     <label>Sự thoải mái và chất lượng phòng (Nhập thang từ 0-10):</label>
-                    <input type="number" class="form-control"  name="su_thoai_mai" required>
+                    <input type="range" class="form-control-range" name="su_thoai_mai" min="0" max="10" value="5" oninput="updateValue(this)">
+                    <span class="slider-value">5</span>
                 </div>
                 <div class="form-group">
                     <label>Dịch vụ (Nhập thang từ 0-10):</label>
-                    <input type="number" class="form-control" name="dich_vu" required>
+                    <input type="range" class="form-control-range" name="dich_vu" min="0" max="10" value="5" oninput="updateValue(this)">
+                    <span class="slider-value">5</span>
                 </div>
                 <div class="form-group">
                     <label>Vị trí (Nhập thang từ 0-10):</label>
-                    <input type="number" class="form-control" name="vi_tri" required>
+                    <input type="range" class="form-control-range" name="vi_tri" min="0" max="10" value="5" oninput="updateValue(this)">
+                    <span class="slider-value">5</span>
                 </div>
                 <div class="form-group">
                     <label>Tiện nghi (Nhập thang từ 0-10):</label>
-                    <input type="number" class="form-control" name="tien_nghi" required>
+                    <input type="range" class="form-control-range" name="tien_nghi" min="0" max="10" value="5" oninput="updateValue(this)">
+                    <span class="slider-value">5</span>
                 </div>
                 <div class="form-group">
                     <label>Số lượng phòng:</label>
-                    <input type="number" class="form-control"  name="so_luong_phong" required>
+                    <input type="number" class="form-control" name="so_luong_phong" required>
                 </div>
                 <div class="form-group">
                     <label>Số lượng nhà hàng:</label>
-                    <input type="number" class="form-control"  name="so_luong_nha_hang" required>
+                    <input type="number" class="form-control" name="so_luong_nha_hang" required>
                 </div>
                 <div class="form-group">
                     <label>Số quán bar:</label>
-                    <input type="number" class="form-control"  name="so_quan_bar" required>
+                    <input type="number" class="form-control" name="so_quan_bar" required>
                 </div>
                 <div class="form-group">
-                    <label>Thang máy (1: có, 0: không có):</label>
-                    <input type="number" class="form-control"  name="thang_may" required>
+                    <label>Thang máy:</label>
+                    <input type="number" class="form-control" name="thang_may" required>
                 </div>
             </div>
             <div id="c2">
                 <div class="form-group">
-                    <label>Tiêu chuẩn về an toàn (1: có, 0: không có): </label>
-                    <input type="number" class="form-control" name="an_toan" required>
+                    <label>Tiêu chuẩn về an toàn:</label>
+                    <input type="hidden" name="an_toan" value="0">
+                    <input type="checkbox" class="form-control" name="an_toan" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Bể bơi (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="be_boi" required>
+                    <label>Bể bơi:</label>
+                    <input type="hidden" name="be_boi" value="0">
+                    <input type="checkbox" class="form-control" name="be_boi" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Bồn tắm (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="bon_tam" required>
+                    <label>Bồn tắm:</label>
+                    <input type="hidden" name="bon_tam" value="0">
+                    <input type="checkbox" class="form-control" name="bon_tam" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Ghế Sofa (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="ghe_sofa" required>
+                    <label>Ghế Sofa:</label>
+                    <input type="hidden" name="ghe_sofa" value="0">
+                    <input type="checkbox" class="form-control" name="ghe_sofa" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Phòng Xông Hơi (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="xong_hoi" required>
+                    <label>Phòng Xông Hơi:</label>
+                    <input type="hidden" name="xong_hoi" value="0">
+                    <input type="checkbox" class="form-control" name="xong_hoi" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Spa (1: có, 0: không có): </label>
-                    <input type="text" class="form-control"  name="spa" required>
+                    <label>Spa:</label>
+                    <input type="hidden" name="spa" value="0">
+                    <input type="checkbox" class="form-control" name="spa" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Mát-xa (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="mat_xa" required>
+                    <label>Mát-xa:</label>
+                    <input type="hidden" name="mat_xa" value="0">
+                    <input type="checkbox" class="form-control" name="mat_xa" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Phòng tập (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="phong_tap" required>
+                    <label>Phòng tập:</label>
+                    <input type="hidden" name="phong_tap" value="0">
+                    <input type="checkbox" class="form-control" name="phong_tap" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Sân golf (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="san_golf" required>
+                    <label>Sân golf:</label>
+                    <input type="hidden" name="san_golf" value="0">
+                    <input type="checkbox" class="form-control" name="san_golf" value="1" onclick="syncCheckboxValue(this)">
                 </div>
                 <div class="form-group">
-                    <label>Sân quần vợt (1: có, 0: không có): </label>
-                    <input type="number" class="form-control"  name="san_quan_vot" required>
+                    <label>Sân quần vợt:</label>
+                    <input type="hidden" name="san_quan_vot" value="0">
+                    <input type="checkbox" class="form-control" name="san_quan_vot" value="1" onclick="syncCheckboxValue(this)">
                 </div>
+                <button type="submit" class="btn-primary">Dự đoán</button>
+            </form>
+        
+            <script>
+                function syncCheckboxValue(checkbox) {
+                    checkbox.previousElementSibling.value = checkbox.checked ? '1' : '0';
+                }
+            </script>
                 <div class="clear"></div>
-            </div>
-            <div id="btn">
-                <div class="form-group">
-                    <input type="submit" value="Dự đoán" class="btn btn-primary">
-                </div>
             </div>
         </form>
     </div>
     <div class="result" align="center">
-        {% if result %} {% for variable, value in original_input.items() %}
-        <b>{{ variable }}</b> : {{ value }} {% endfor %}
-        <br>
-        <br>
-        <h1>Predicted Rate Star:</h1>
-        <p style="font-size:50px">{{ result }}</p>
+        {% if result %}
+            {% for variable, value in original_input.items() %}
+                <b>{{ variable }}</b>: {{ value }}<br>
+            {% endfor %}
+            <br>
+            <h1>Predicted Rate Star:</h1>
+            <p style="font-size:50px">{{ result }}</p>
         {% endif %}
     </div>
+
+    <script>
+        function updateValue(slider) {
+            var valueSpan = slider.nextElementSibling;
+            valueSpan.textContent = slider.value;
+        }
+    </script>
 </body>
 
 </html>
