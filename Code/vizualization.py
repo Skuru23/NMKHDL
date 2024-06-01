@@ -16,7 +16,7 @@ from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.neighbors import KNeighborsClassifier
 
 # Khai bao bien va chuan hoa string thanh float
-hotel = pd.read_csv("../Data/hotelFinish1.csv")
+hotel = pd.read_csv("../Data/hotel_data.csv")
 columns_data = [
     "Độ sạch sẽ",
     "Sự thoải mái và chất lượng phòng",

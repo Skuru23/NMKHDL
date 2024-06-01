@@ -1,7 +1,7 @@
 import pandas as pd
 
-def extractHotelLink(allFile: str, newFile: str):
-    hotel = pd.read_csv(allFile)
+def extract_hotel_link(linkFile: str):
+    hotel = pd.read_csv(linkFile)
     link = hotel['0']
     arr=[]
 
@@ -95,4 +95,4 @@ def extractHotelLink(allFile: str, newFile: str):
         k11=k11+1
 
     hotelNew = pd.DataFrame(arr)
-    hotelNew.to_csv(newFile, index= False)
+    hotelNew.to_csv(linkFile, index= False)
