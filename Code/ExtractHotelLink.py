@@ -5,8 +5,8 @@ def extractHotelLink(allFile: str, newFile: str):
     link = hotel['0']
     arr=[]
 
-    for tuan in link:
-        arr.append(tuan)
+    for i in link:
+        arr.append(i)
     i=0
 
     while i<len(arr):
@@ -94,3 +94,5 @@ def extractHotelLink(allFile: str, newFile: str):
             continue
         k11=k11+1
 
+    hotelNew = pd.DataFrame(arr)
+    hotelNew.to_csv(newFile, index= False)
