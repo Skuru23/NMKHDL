@@ -108,4 +108,4 @@ plt.show()
 
 # Lưu và load mô hình dự báo
 joblib.dump(clf, "random_forest.joblib")
-loaded_rf = joblib.load("../DeploymodelML/model/random_forest.joblib")
+loaded_rf = joblib.load("../Deploy/model/random_forest.joblib")
