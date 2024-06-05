@@ -8,5 +8,4 @@ def remove_data(oldDataFile: str, newDataFile: str):
     for col in columns_to_clean:
         hotel[col] = hotel[col].astype(str).str.replace(",", ".").astype(float)
 
-    # Lưu dữ liệu đã xử lý vào tệp hotelFinish1.csv
     hotel.to_csv(newDataFile, index=False)
